@@ -8,13 +8,14 @@ The solution is in a "works for us" condition. It behaves well under those error
 We are still learning however and do not recommend it for unreflected production use. Feedback and reviews are much appreciated.
 
 [![Build Status](https://travis-ci.org/otto-de/tesla-zookeeper-observer.svg)](https://travis-ci.org/otto-de/tesla-zookeeper-observer)
+[![Dependencies Status](http://jarkeeper.com/otto-de/tesla-zookeeper-observer/status.svg)](http://jarkeeper.com/otto-de/tesla-zookeeper-observer)
 
 
 ## Usage
 
 Add this to your project's dependencies:
 
-`[de.otto/tesla-zookeeper-observer "0.1.0"]`
+`[de.otto/tesla-zookeeper-observer "0.1.1"]`
 
 See the included example on how to use it.
 
