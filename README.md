@@ -17,23 +17,11 @@ Add this to your project's dependencies:
 
 `[de.otto/tesla-zookeeper-observer "0.1.1"]`
 
-See the included example on how to use it.
+See the example at [tesla-examples/zookeeper-examples](https://github.com/otto-de/tesla-examples/zookeeper-example) on how to use it.
 
-## Example
+## Configuration
 
-Clone the repo.
-
-Either in `default.properties` in `/resources` or in `application.properties` in the working dir configure `zookeeper.connect` to contain a valid zookeeper connection string.
-
-Start the included example application with `lein run`.
-
-Access the example service under `http://localhost:8080/example` and `http://localhost:8080/example/foo`.
-
-The latter will report which data, if any, zookeeper has for the path /foo.
-
-## TODO
-
-* report connection status for status page
+You need to have a property `zookeeper.connect` containing a complete zookeeper connection string. (including chroot)
 
 ## Initial Contributors
 
