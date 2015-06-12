@@ -1,8 +1,7 @@
 (ns de.otto.tesla.zk.zk-observer
   (:require [zookeeper :as zk]
             [com.stuartsierra.component :as c]
-            [clojure.tools.logging :as log])
-  (:import (org.apache.zookeeper KeeperException)))
+            [clojure.tools.logging :as log]))
 
 (defn- watch! [self key event]
   (if (or (= (:event-type event) :NodeDataChanged) (nil? event))
@@ -12,7 +11,7 @@
         (log/debug "Got  " data " from zookeeper for " key ".")
         (swap! (:observed self) #(assoc % key data))
         data)
-      (catch KeeperException e
+      (catch Exception e
         (log/error e "Exception while contacting Zookeeper")))))
 
 (defn- fetch-remote! [self key]
@@ -36,7 +35,7 @@
 (defprotocol KeyObserver
   (observe! [self key]))
 
-(defrecord ZKObserver []
+(defrecord ZKObserver [config]
   c/Lifecycle
   (start [self]
     (log/info "-> starting Zookeeper-Client.")
