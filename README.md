@@ -1,27 +1,35 @@
 # tesla-zookeeper-observer
 
 An addon to [tesla-microservice](https://github.com/otto-de/tesla-microservice)
-that allows to observe values in zookeeper using [zookeeper-clj](https://github.com/liebke/zookeeper-clj).
- No write access is included nor intended.
+that allows to observe values in [Apache ZooKeeper](https://zookeeper.apache.org/) using [zookeeper-clj](https://github.com/liebke/zookeeper-clj).
+Write access is not included at the moment.
 
-The solution is in a "works for us" condition. It behaves well under those error-conditions (connection expiry etc.) we have yet created.
-We are still learning however and do not recommend it for unreflected production use. Feedback and reviews are much appreciated.
+`[de.otto/tesla-zookeeper-observer "0.1.2"]`
 
 [![Build Status](https://travis-ci.org/otto-de/tesla-zookeeper-observer.svg)](https://travis-ci.org/otto-de/tesla-zookeeper-observer)
 [![Dependencies Status](http://jarkeeper.com/otto-de/tesla-zookeeper-observer/status.svg)](http://jarkeeper.com/otto-de/tesla-zookeeper-observer)
 
+## how it works
 
-## Usage
+This addon can be used to to fetch data from zookeeper using the ```(observe! self key)``` function. The result is stored in an in memory map and a listener is registered with zookeeper.
 
-Add this to your project's dependencies:
+If the data in zookeeper is changed, the new value will be fetched asynchronously and updated in memory.
 
-`[de.otto/tesla-zookeeper-observer "0.1.1"]`
+All subsequent observations of the same key hit the value cached in memory. Thus the data can be used from the application with high frequency (e.g. for every database access) without any performance penalty. 
 
-See the example at [tesla-examples/zookeeper-examples](https://github.com/otto-de/tesla-examples/zookeeper-example) on how to use it.
+## Example
+
+See [tesla-examples/zookeeper-examples](https://github.com/otto-de/tesla-examples/zookeeper-example) for a usage example.
 
 ## Configuration
 
-You need to have a property `zookeeper.connect` containing a complete zookeeper connection string. (including chroot)
+The configuration property `zookeeper.connect` contains a zookeeper connection string (optionally including a chroot).
+
+## Compatibility
+
+Version `0.1.2` and above of this library is compatible with Versions `0.1.15` and above of _tesla-microservice_.
+
+Instances of `ZKObserver` have a dependency on the `:config`-component of _tesla-microservice_. 
 
 ## Initial Contributors
 
