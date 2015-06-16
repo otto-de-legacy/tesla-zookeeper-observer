@@ -19,7 +19,7 @@ All subsequent observations of the same key hit the value cached in memory. Thus
 
 ## Example
 
-See [tesla-examples/zookeeper-examples](https://github.com/otto-de/tesla-examples/zookeeper-example) for a usage example.
+See [tesla-examples/zookeeper-example](https://github.com/otto-de/tesla-examples/tree/master/zookeeper-example) for a usage example.
 
 ## Configuration
 
