@@ -9,7 +9,7 @@ An addon to [tesla-microservice](https://github.com/otto-de/tesla-microservice)
 that allows to observe values in [Apache ZooKeeper](https://zookeeper.apache.org/) using [zookeeper-clj](https://github.com/liebke/zookeeper-clj).
 Write access is not included at the moment.
 
-`[de.otto/tesla-zookeeper-observer "0.1.2"]`
+`[de.otto/tesla-zookeeper-observer "0.1.3"]`
 
 [![Build Status](https://travis-ci.org/otto-de/tesla-zookeeper-observer.svg)](https://travis-ci.org/otto-de/tesla-zookeeper-observer)
 [![Dependencies Status](http://jarkeeper.com/otto-de/tesla-zookeeper-observer/status.svg)](http://jarkeeper.com/otto-de/tesla-zookeeper-observer)
@@ -29,6 +29,18 @@ See [tesla-examples/zookeeper-example](https://github.com/otto-de/tesla-examples
 ## Configuration
 
 The configuration property `zookeeper.connect` contains a zookeeper connection string (optionally including a chroot).
+
+If you want to use multiple zookeeper-components in your system, which connect to different zookeepers you have to initialize your components with a name:
+
+```
+(new-zkobserver <zk-name>)
+```
+
+The name is then used to read the zookeeper-connect-string from your config:
+
+```
+<zk-name>.zookeeper.connect
+```
 
 ## Compatibility
 
