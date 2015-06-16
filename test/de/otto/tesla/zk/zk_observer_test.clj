@@ -9,10 +9,11 @@
 
 (def connect-string "localhost:2184,localhost:2184")
 
-(def test-system
+(defn test-system [runtime-conf]
   (dissoc
-    (c/system-map :config {:config {:zookeeper-connect connect-string}}
-                  :zookeeper (c/using (zko/new-zkobserver) [:config]))
+    (c/system-map :config {:config runtime-conf}
+                  :zookeeper (c/using (zko/new-zkobserver) [:config])
+                  :zookeeper-with-name (c/using (zko/new-zkobserver "zk-with-name") [:config]))
     :server))
 
 (defn overwrite [client path data]
@@ -23,7 +24,7 @@
   (u/with-started [started-zoo (inmemzk/map->InMemoryZooKeeper {})]
                   (Thread/sleep 50)                         ;waiting for the ZK to start
                   (u/with-started
-                    [started test-system]
+                    [started (test-system {:zookeeper-connect connect-string})]
                     (with-open
                       [low-level-client (zk/connect connect-string)]
                       (let [zk-client (:zookeeper started)]
@@ -47,6 +48,17 @@
 (deftest ^:unit should-return-nil-on-exception
   (with-redefs [zk/data (fn [_ _ _ _] (throw (KeeperException/create KeeperException$Code/NONODE "no node")))]
     (u/with-started [started-zoo (inmemzk/map->InMemoryZooKeeper {})]
-                    (u/with-started [started test-system]
+                    (u/with-started [started (test-system {:zookeeper-connect connect-string})]
                                     (let [zk-client (:zookeeper started)]
                                       (is (= (zko/observe! zk-client "foo") nil)))))))
+
+(deftest ^:unit should-determine-zk-connect-string
+  (with-redefs [zko/connect! (fn [_])]
+    (u/with-started [started (test-system {:zookeeper-connect              "foo"
+                                           :zk-with-name-zookeeper-connect "bar"})]
+                    (is (= "foo"
+                           (zko/zookeeper-connect-str (:zookeeper started))))
+                    (is (= "bar"
+                           (zko/zookeeper-connect-str (:zookeeper-with-name started)))))))
+
+

@@ -22,8 +22,13 @@
   (doseq [k (keys @(:observed self))]
     (watch! self k nil)))
 
+(defn zookeeper-connect-str [{:keys [config zk-name]}]
+  (get-in config [:config (if zk-name
+                            (keyword (str zk-name "-zookeeper-connect"))
+                            :zookeeper-connect)]))
+
 (defn- connect! [self]
-  (when-let [connect-string (get-in self [:config :config :zookeeper-connect])]
+  (when-let [connect-string (zookeeper-connect-str self)]
     (log/info "Initializing connection to " connect-string ".")
     (zk/connect connect-string
                 :watcher (fn [event]
@@ -35,7 +40,7 @@
 (defprotocol KeyObserver
   (observe! [self key]))
 
-(defrecord ZKObserver [config]
+(defrecord ZKObserver [config zk-name]
   c/Lifecycle
   (start [self]
     (log/info "-> starting Zookeeper-Client.")
@@ -57,4 +62,6 @@
       local-data
       (fetch-remote! self key))))
 
-(defn new-zkobserver [] (map->ZKObserver {}))
+(defn new-zkobserver
+  ([] (map->ZKObserver {:zk-name nil}))
+  ([name] (map->ZKObserver {:zk-name name})))
