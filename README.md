@@ -1,3 +1,8 @@
+
+<img  align="right" src="https://cloud.githubusercontent.com/assets/379090/8177805/aaafd306-1408-11e5-8d2b-22b7da1cba62.jpg"/>
+
+> The image on the right side shows Nikola Tesla observing a complicated electrical device. Waiting for push notifications.
+
 # tesla-zookeeper-observer
 
 An addon to [tesla-microservice](https://github.com/otto-de/tesla-microservice)
