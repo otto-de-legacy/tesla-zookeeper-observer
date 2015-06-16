@@ -21,7 +21,7 @@
 
 (deftest ^:unit should-return-an-observed-value-and-monitor-it-for-changes
   (u/with-started [started-zoo (inmemzk/map->InMemoryZooKeeper {})]
-                  (Thread/sleep 50)                        ;waiting for the ZK to start
+                  (Thread/sleep 50)                         ;waiting for the ZK to start
                   (u/with-started
                     [started test-system]
                     (with-open
@@ -30,19 +30,19 @@
                         (zk/create low-level-client "/foo")
 
                         (overwrite low-level-client "/foo" "kaf")
-                        (is (= (zko/observe! zk-client "/foo")) "kaf")
+                        (is (= (zko/observe! zk-client "/foo") "kaf"))
 
                         (overwrite low-level-client "/foo" "kaz")
                         (Thread/sleep 50)
-                        (is (= (zko/observe! zk-client "/foo")) "kaz")
+                        (is (= (zko/observe! zk-client "/foo") "kaz"))
 
                         (overwrite low-level-client "/foo" "kam")
                         (Thread/sleep 50)
-                        (is (= (zko/observe! zk-client "/foo")) "kam")
+                        (is (= (zko/observe! zk-client "/foo") "kam"))
 
                         (overwrite low-level-client "/foo" "kan")
                         (Thread/sleep 50)
-                        (is (= (zko/observe! zk-client "/foo")) "kan"))))))
+                        (is (= (zko/observe! zk-client "/foo") "kan")))))))
 
 (deftest ^:unit should-return-nil-on-exception
   (with-redefs [zk/data (fn [_ _ _ _] (throw (KeeperException/create KeeperException$Code/NONODE "no node")))]
