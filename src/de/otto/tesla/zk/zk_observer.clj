@@ -7,7 +7,7 @@
   (if (or (= (:event-type event) :NodeDataChanged) (nil? event))
     (try
       (let [client @(:client self)
-            data (String. (:data (zk/data client key :watcher (partial watch! self key))) "UTF-8")]
+            data (:data (zk/data client key :watcher (partial watch! self key)))]
         (log/debug "Got  " data " from zookeeper for " key ".")
         (swap! (:observed self) #(assoc % key data))
         data)
@@ -38,7 +38,7 @@
                              (re-register-watchers! self))))))
 
 (defprotocol KeyObserver
-  (observe! [self key]))
+  (observe! [self key] [self key transform-fn]))
 
 (defrecord ZKObserver [config zk-name]
   c/Lifecycle
@@ -58,9 +58,15 @@
 
   KeyObserver
   (observe! [self key]
-    (if-let [local-data (get @(:observed self) key)]
-      local-data
-      (fetch-remote! self key))))
+    (observe! self key (fn [val] (String. val "UTF8"))))
+
+  (observe! [self key transform-fn]
+    (try
+      (transform-fn (if-let [local-data (get @(:observed self) key)]
+                      local-data
+                      (fetch-remote! self key)))
+      (catch Exception e
+        (log/error e "Value determined using zookeeper could not be transformed using given transformation-function, key:" key)))))
 
 (defn new-zkobserver
   ([] (map->ZKObserver {:zk-name nil}))

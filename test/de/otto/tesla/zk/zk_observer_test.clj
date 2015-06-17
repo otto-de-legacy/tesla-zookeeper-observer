@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [zookeeper :as zk]
             [com.stuartsierra.component :as c]
+            [clojure.string :as cs]
             [de.otto.tesla.zk.zk-observer :as zko]
             [de.otto.tesla.zk.util.zk-inmem :as inmemzk]
             [de.otto.tesla.zk.util.test-utils :as u])
@@ -31,26 +32,62 @@
                         (zk/create low-level-client "/foo")
 
                         (overwrite low-level-client "/foo" "kaf")
-                        (is (= (zko/observe! zk-client "/foo") "kaf"))
+                        (is (= "kaf"
+                               (zko/observe! zk-client "/foo")))
 
                         (overwrite low-level-client "/foo" "kaz")
                         (Thread/sleep 50)
-                        (is (= (zko/observe! zk-client "/foo") "kaz"))
+                        (is (= "kaz"
+                               (zko/observe! zk-client "/foo")))
 
                         (overwrite low-level-client "/foo" "kam")
                         (Thread/sleep 50)
-                        (is (= (zko/observe! zk-client "/foo") "kam"))
+                        (is (= "kam"
+                               (zko/observe! zk-client "/foo")))
 
                         (overwrite low-level-client "/foo" "kan")
                         (Thread/sleep 50)
-                        (is (= (zko/observe! zk-client "/foo") "kan")))))))
+                        (is (= "kan"
+                               (zko/observe! zk-client "/foo"))))))))
+
+(defn as-str-with-leading-zero [val]
+  (str "0" (String. val "UTF8")))
+
+(defn as-reverse-str [val]
+  (cs/reverse (String. val "UTF8")))
+
+(deftest ^:unit should-return-an-observed-value-and-monitor-it-for-changes-using-a-transform-function
+  (u/with-started [started-zoo (inmemzk/map->InMemoryZooKeeper {})]
+                  (Thread/sleep 50)                         ;waiting for the ZK to start
+                  (u/with-started
+                    [started (test-system {:zookeeper-connect connect-string})]
+                    (with-open
+                      [low-level-client (zk/connect connect-string)]
+                      (let [zk-client (:zookeeper started)]
+                        (zk/create low-level-client "/foo")
+
+                        (testing "should return an uncached transformed value"
+                          (overwrite low-level-client "/foo" "12345")
+                          (Thread/sleep 50)
+                          (is (= "54321"
+                                 (zko/observe! zk-client "/foo" as-reverse-str))))
+                        (testing "should return a cached value with different transformation"
+                          (is (= "012345"
+                                 (zko/observe! zk-client "/foo" as-str-with-leading-zero))))
+
+                        (testing "should return a refreshed transformed value"
+                          (overwrite low-level-client "/foo" "54321")
+                          (Thread/sleep 50)
+                          (is (= "054321"
+                                 (zko/observe! zk-client "/foo" as-str-with-leading-zero)))))))))
 
 (deftest ^:unit should-return-nil-on-exception
   (with-redefs [zk/data (fn [_ _ _ _] (throw (KeeperException/create KeeperException$Code/NONODE "no node")))]
     (u/with-started [started-zoo (inmemzk/map->InMemoryZooKeeper {})]
                     (u/with-started [started (test-system {:zookeeper-connect connect-string})]
                                     (let [zk-client (:zookeeper started)]
-                                      (is (= (zko/observe! zk-client "foo") nil)))))))
+                                      (is (= nil
+                                             (zko/observe! zk-client "foo"))))))))
 
 (deftest ^:unit should-determine-zk-connect-string
   (with-redefs [zko/connect! (fn [_])]
