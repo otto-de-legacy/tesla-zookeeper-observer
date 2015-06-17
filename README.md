@@ -7,9 +7,10 @@
 
 An addon to [tesla-microservice](https://github.com/otto-de/tesla-microservice)
 that allows to observe values in [Apache ZooKeeper](https://zookeeper.apache.org/) using [zookeeper-clj](https://github.com/liebke/zookeeper-clj).
+The values observed are by default transformed to a UTF8-String. Optionally a transform-function can be specified by the user.
 Write access is not included at the moment.
 
-`[de.otto/tesla-zookeeper-observer "0.1.3"]`
+`[de.otto/tesla-zookeeper-observer "0.1.4"]`
 
 [![Build Status](https://travis-ci.org/otto-de/tesla-zookeeper-observer.svg)](https://travis-ci.org/otto-de/tesla-zookeeper-observer)
 [![Dependencies Status](http://jarkeeper.com/otto-de/tesla-zookeeper-observer/status.svg)](http://jarkeeper.com/otto-de/tesla-zookeeper-observer)
