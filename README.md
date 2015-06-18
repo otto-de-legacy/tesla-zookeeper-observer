@@ -10,7 +10,7 @@ that allows to observe values in [Apache ZooKeeper](https://zookeeper.apache.org
 The values observed are by default transformed to a UTF8-String. Optionally a transform-function can be specified by the user.
 Write access is not included at the moment.
 
-`[de.otto/tesla-zookeeper-observer "0.1.4"]`
+`[de.otto/tesla-zookeeper-observer "0.1.5"]`
 
 [![Build Status](https://travis-ci.org/otto-de/tesla-zookeeper-observer.svg)](https://travis-ci.org/otto-de/tesla-zookeeper-observer)
 [![Dependencies Status](http://jarkeeper.com/otto-de/tesla-zookeeper-observer/status.svg)](http://jarkeeper.com/otto-de/tesla-zookeeper-observer)
