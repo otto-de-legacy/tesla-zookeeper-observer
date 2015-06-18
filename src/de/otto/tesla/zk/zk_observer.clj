@@ -34,6 +34,7 @@
                 :watcher (fn [event]
                            (when (= :Expired (:keeper-state event))
                              (log/warn "Connection expired: " event)
+                             (Thread/sleep 2000)
                              (reset! (:client self) (connect! self))
                              (re-register-watchers! self))))))
 
