@@ -8,7 +8,7 @@
             :dependencies [[org.clojure/clojure "1.7.0"]
                            [zookeeper-clj "0.9.3"]]
 
-            :profiles {:provided {:dependencies [[de.otto/tesla-microservice "0.1.25"]
+            :profiles {:provided {:dependencies [[de.otto/tesla-microservice "0.1.32"]
                                                  [com.stuartsierra/component "0.3.1"]]}
                        :dev      {:dependencies [[org.slf4j/slf4j-api "1.7.13"]
                                                  [ch.qos.logback/logback-core "1.1.3"]
