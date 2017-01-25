@@ -1,6 +1,5 @@
 (ns de.otto.tesla.zk.util.zk-inmem
   (:require [com.stuartsierra.component :as c]
-            [zookeeper.logger :as zk]
             [clojure.tools.logging :as log])
   (:import (org.apache.zookeeper.server ZooKeeperServerMain ServerConfig)
            (org.apache.zookeeper.server.quorum QuorumPeerConfig)
