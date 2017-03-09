@@ -3,19 +3,24 @@
             [com.stuartsierra.component :as c]
             [clojure.tools.logging :as log]))
 
+(defn- log-tag [{:keys [zk-name]}]
+  (if zk-name
+    (str "[" zk-name "]")
+    ""))
+
 (defn- watch! [self key event]
   (if (or (= (:event-type event) :NodeDataChanged) (nil? event))
     (try
       (let [client @(:client self)
             data (:data (zk/data client key :watcher (partial watch! self key)))]
-        (log/debug "Got  " data " from zookeeper for " key ".")
+        (log/debug (log-tag self) "Got" data "from zookeeper for" key ".")
         (swap! (:observed self) #(assoc % key data))
         data)
       (catch Exception e
-        (log/error e "Exception while contacting Zookeeper")))))
+        (log/error e (log-tag self) "Exception while contacting Zookeeper")))))
 
 (defn- fetch-remote! [self key]
-  (log/info "Observing " key)
+  (log/info (log-tag self) "Observing" key)
   (watch! self key nil))
 
 (defn- re-register-watchers! [self]
@@ -29,11 +34,11 @@
 
 (defn- connect! [self]
   (when-let [connect-string (zookeeper-connect-str self)]
-    (log/info "Initializing connection to " connect-string ".")
+    (log/info (log-tag self) "Initializing connection to" connect-string ".")
     (zk/connect connect-string
                 :watcher (fn [event]
                            (when (= :Expired (:keeper-state event))
-                             (log/warn "Connection expired: " event)
+                             (log/warn (log-tag self) "Connection expired:" event)
                              (Thread/sleep 2000)
                              (reset! (:client self) (connect! self))
                              (re-register-watchers! self))))))
@@ -44,16 +49,16 @@
 (defrecord ZKObserver [config zk-name]
   c/Lifecycle
   (start [self]
-    (log/info "-> starting Zookeeper-Client.")
+    (log/info (log-tag self) "-> starting Zookeeper-Client.")
     (let [new-self (assoc self :observed (atom {})
                                :client (atom nil))]
       (reset! (:client new-self) (connect! new-self))
       new-self))
 
   (stop [self]
-    (log/info "<- stopping Zookeeper-Client.")
+    (log/info (log-tag self) "<- stopping Zookeeper-Client.")
     (when-let [client @(:client self)]
-      (log/info "<- closing Zookeeper-Client-connection.")
+      (log/info (log-tag self) "<- closing Zookeeper-Client-connection.")
       (zk/close client))
     self)
 
@@ -67,7 +72,7 @@
                       local-data
                       (fetch-remote! self key)))
       (catch Exception e
-        (log/error e "Value determined using zookeeper could not be transformed using given transformation-function, key:" key)))))
+        (log/error e (log-tag self) "Value determined using zookeeper could not be transformed using given transformation-function, key:" key)))))
 
 (defn new-zkobserver
   ([] (map->ZKObserver {:zk-name nil}))
