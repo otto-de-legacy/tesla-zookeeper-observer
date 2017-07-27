@@ -1,4 +1,4 @@
-(defproject de.otto/tesla-zookeeper-observer "0.1.8"
+(defproject de.otto/tesla-zookeeper-observer "0.1.9-SNAPSHOT"
   :description "Addon to https://github.com/otto-de/tesla-microservice to observe values in zookeeper."
   :url "https://github.com/otto-de/tesla-zookeeper-observer"
   :license {:name "Apache License 2.0"
