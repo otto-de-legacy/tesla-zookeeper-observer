@@ -46,6 +46,9 @@
 (defprotocol KeyObserver
   (observe! [self key] [self key transform-fn]))
 
+(defprotocol KeySetter
+  (set! [self key val]))
+
 (defrecord ZKObserver [config zk-name]
   c/Lifecycle
   (start [self]
@@ -64,7 +67,7 @@
 
   KeyObserver
   (observe! [self key]
-    (observe! self key (fn [val] (String. val "UTF8"))))
+    (observe! self key (fn [val] (String. ^bytes val "UTF8"))))
 
   (observe! [self key transform-fn]
     (try
@@ -72,7 +75,13 @@
                       local-data
                       (fetch-remote! self key)))
       (catch Exception e
-        (log/error e (log-tag self) "Value determined using zookeeper could not be transformed using given transformation-function, key:" key)))))
+        (log/error e (log-tag self) "Value determined using zookeeper could not be transformed using given transformation-function, key:" key))))
+
+  KeySetter
+  (set! [self key val]
+    (let [client @(:client self)
+          old-version (-> (zk/data client key) :stat :version)]
+      (zk/set-data client key (.getBytes val) old-version))))
 
 (defn new-zkobserver
   ([] (map->ZKObserver {:zk-name nil}))

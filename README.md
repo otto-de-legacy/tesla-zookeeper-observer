@@ -17,11 +17,13 @@ Write access is not included at the moment.
 
 ## how it works
 
-This addon can be used to to fetch data from zookeeper using the ```(observe! self key)``` function. The result is stored in an in memory map and a listener is registered with zookeeper.
+This addon can be used to to fetch data from zookeeper using the `(observe! self key)` function. The result is stored in an in memory map and a listener is registered with zookeeper.
 
 If the data in zookeeper is changed, the new value will be fetched asynchronously and updated in memory.
 
 All subsequent observations of the same key hit the value cached in memory. Thus the data can be used from the application with high frequency (e.g. for every database access) without any performance penalty. 
+
+Since version _0.2.0_ you can also set data using the `(set! self key val)` function. 
 
 ## Example
 
