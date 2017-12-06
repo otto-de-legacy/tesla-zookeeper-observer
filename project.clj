@@ -7,6 +7,8 @@
         :url  "https://github.com/otto-de/tesla-zookeeper-observer"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [zookeeper-clj "0.9.4"]
+		 [org.apache.zookeeper/zookeeper "3.4.11"]
+		 [io.netty/netty "3.10.6.Final"]
                  [org.clojure/tools.logging "0.4.0"]
                  [com.stuartsierra/component "0.3.2"]]
   :lein-release {:deploy-via :clojars}
